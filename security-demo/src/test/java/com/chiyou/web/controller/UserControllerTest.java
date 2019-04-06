@@ -35,25 +35,36 @@ public class UserControllerTest {
 
     @Test
     public void whenQuerySuccess() throws Exception {
-       mockMvc.perform(MockMvcRequestBuilders.get("/user")
-               .param("username","jojo")
-               .param("age","18")
-               .param("ageTo","60")
-               .param("sex","男")
-               .param("size","15") // 每页条数
-               .param("page","3")  // 第三页
-               .param("sort","age,desc")  // 排序方式
-               .contentType(MediaType.APPLICATION_JSON_UTF8))
-               .andExpect(MockMvcResultMatchers.status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(3));
+        String result = mockMvc.perform(MockMvcRequestBuilders.get("/user")
+                .param("username", "jojo")
+                .param("age", "18")
+                .param("ageTo", "60")
+                .param("sex", "男")
+                .param("size", "15") // 每页条数
+                .param("page", "3")  // 第三页
+                .param("sort", "age,desc")  // 排序方式
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(3))
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
     }
 
     @Test
     public void whenGetInfoSuccess() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/user/1")
+        String result = mockMvc.perform(MockMvcRequestBuilders.get("/user/1")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("tom"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("tom"))
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
+    }
+
+    @Test
+    public void whenGetInfoFail() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/a")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
 }
