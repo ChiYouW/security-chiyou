@@ -7,8 +7,10 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +26,8 @@ public class UserController {
     @JsonView(User.UserSimpleView.class)
     public List<User> query(UserQueryCondition condition,
                             @PageableDefault(page = 2, size = 15, sort = "username,asc") Pageable pageable) {
-
         System.out.println(ReflectionToStringBuilder.toString(condition, ToStringStyle.MULTI_LINE_STYLE));
-
         System.out.println(ReflectionToStringBuilder.toString(pageable, ToStringStyle.MULTI_LINE_STYLE));
-
         List<User> user = new ArrayList<User>();
         user.add(new User());
         user.add(new User());
@@ -41,6 +40,17 @@ public class UserController {
     public User getInfo(@PathVariable("id") String id) {
         User user = new User();
         user.setUsername("tom");
+        return user;
+    }
+
+    @PostMapping
+    @JsonView(User.UserSimpleView.class)
+    public User createUser(@Valid @RequestBody User user, BindingResult result){
+        if(result.hasErrors()){
+            result.getAllErrors().stream().forEach(error -> System.out.println(error.getDefaultMessage()));
+        }
+        System.out.println(ReflectionToStringBuilder.toString(user,ToStringStyle.MULTI_LINE_STYLE));
+        user.setId("1");
         return user;
     }
 
